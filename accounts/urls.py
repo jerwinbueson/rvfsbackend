@@ -3,6 +3,7 @@ from .views import (CSRFTokenView,
 LoginView, 
 LogoutView, 
 AuthCheckView,
+UserProfileView
 )
 
 urlpatterns = [
@@ -10,4 +11,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('csrf/', CSRFTokenView.as_view(), name='csrf'),
     path('auth-check/', AuthCheckView.as_view(), name='auth-check'),
+    path('users/me', UserProfileView.as_view(), name='user-profile'),
 ]

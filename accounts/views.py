@@ -1,12 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, UpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser
+from .serializers import UserInformationSerializer
 
 
 class AuthCheckView(APIView):
@@ -45,3 +46,13 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return JsonResponse({'message': 'Logged out successfully'})
+
+
+class UserProfileView(RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    queryset = CustomUser.objects.all()
+    serializer_class = UserInformationSerializer
+
+    
+    def get_object(self):
+        return self.request.user
