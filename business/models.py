@@ -17,3 +17,17 @@ class CalendarYear(models.Model):
     name = models.CharField(max_length=30)
     start_date = models.DateField()
     end_date = models.DateField()
+    default = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.default:
+            CalendarYear.objects.exclude(pk=self.pk).filter(default=True).update(default=False)
+        elif not CalendarYear.objects.exclude(pk=self.pk).filter(default=True).exists():
+            self.default = True
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ['name']
+    
+    def __str__(self):
+        return self.name
