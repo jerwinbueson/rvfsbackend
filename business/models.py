@@ -12,4 +12,8 @@ class BusinessUnit(models.Model):
     def __str__(self):
         return self.name
 
-    
+
+class CalendarYear(models.Model):
+    name = models.CharField(max_length=30)
+    start_date = models.DateField()
+    end_date = models.DateField()
