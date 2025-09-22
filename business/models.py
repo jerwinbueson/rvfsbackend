@@ -21,14 +21,18 @@ class CalendarYear(models.Model):
     default = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
+        # Only affect records for the same business unit
         if self.default:
-            CalendarYear.objects.exclude(pk=self.pk).filter(default=True).update(default=False)
-        elif not CalendarYear.objects.exclude(pk=self.pk).filter(default=True).exists():
+            CalendarYear.objects.filter(
+                business_unit=self.business_unit
+            ).exclude(pk=self.pk).update(default=False)
+        elif not CalendarYear.objects.filter(
+            business_unit=self.business_unit, default=True
+        ).exclude(pk=self.pk).exists():
             self.default = True
         super().save(*args, **kwargs)
 
     class Meta:
-        unique_together = ['name']
-    
+        unique_together = ('business_unit', 'name')  
     def __str__(self):
-        return self.name
+        return f"{self.business_unit} - {self.name}"
