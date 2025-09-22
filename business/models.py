@@ -14,6 +14,7 @@ class BusinessUnit(models.Model):
 
 
 class CalendarYear(models.Model):
+    business_unit = models.ForeignKey(BusinessUnit, on_delete=models.PROTECT)
     name = models.CharField(max_length=30)
     start_date = models.DateField()
     end_date = models.DateField()
