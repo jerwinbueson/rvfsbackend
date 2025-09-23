@@ -18,7 +18,7 @@ class GeneralJournal(models.Model):
     business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
     calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
     entry = models.ForeignKey(JournalEntry, on_delete=models.PROTECT)
-    accounts = models.ForeignKey('chartsofaccounts.chartsofaccounts', on_delete=models.PROTECT)
+    accounts = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
     debit_amount = models.DecimalField(max_digits=30, decimal_places=2, default=0)
     credit_amount = models.DecimalField(max_digits=30, decimal_places=2, default=0)
 
