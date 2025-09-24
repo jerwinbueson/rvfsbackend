@@ -1,17 +1,30 @@
 from django.db import models
 
 
-
-
 class JournalEntry(models.Model):
     business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
     calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
     date = models.DateField()
-    reference = models.CharField(max_length=20)
+    reference = models.CharField(max_length=20)  # control number/voucher no
     description = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.reference} - {self.date}"
+
+
+
+class JournalLine(models.Model):
+    business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
+    calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
+    journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')
+    account = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
+    debit_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    credit_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    particulars = models.CharField(max_length=255, blank=True)
+
+    def __str__(self):
+        return f"{self.journal_entry.reference} - {self.account.account_name}"
+
     
 
 class GeneralJournal(models.Model):

@@ -1,3 +1,71 @@
 from django.shortcuts import render
+from rest_framework.generics import ListAPIView, CreateAPIView
+from .models import(
+    JournalEntry,
+    JournalLine,
+    GeneralJournal,
+    CashReceipt,
+    CashDisbursement,
+    Sales,
+)
+from .serializers import(
+    JournalEntrySerializer,
+    JournalLineSerializer,
+    GeneralJournalSerializer,
+    CashReceiptSerializer,
+    CashDisbursementSerializer,
+    SalesSerializer,
+)
 
-# Create your views here.
+class JournalEntryListAPIView(ListAPIView):
+    queryset = JournalEntry.objects.all()
+    serializer_class = JournalEntrySerializer
+
+class JournalEntryCreateAPIView(CreateAPIView):
+    queryset = JournalEntry.objects.all()
+    serializer_class = JournalEntrySerializer
+
+
+class JournalLineListAPIView(ListAPIView):
+    queryset = JournalLine.objects.all()
+    serializer_class = JournalLineSerializer
+
+class JournalLineCreateAPIView(CreateAPIView):
+    queryset = JournalLine.objects.all()
+    serializer_class = JournalLineSerializer
+    
+
+class GeneralJournalListAPIView(ListAPIView):
+    queryset = GeneralJournal.objects.all()
+    serializer_class = GeneralJournalSerializer
+    
+
+class GeneralJournalCreateAPIView(CreateAPIView):
+    queryset = GeneralJournal.objects.all()
+    serializer_class = GeneralJournalSerializer
+
+class CashReceiptListAPIView(ListAPIView):
+    queryset = CashReceipt.objects.all()
+    serializer_class = CashReceiptSerializer
+    
+
+class CashReceiptCreateAPIView(CreateAPIView):
+    queryset = CashReceipt.objects.all()
+    serializer_class = CashReceiptSerializer
+
+class CashDisbursementListAPIView(ListAPIView):
+    queryset = CashDisbursement.objects.all()
+    serializer_class = CashDisbursementSerializer
+    
+class CashDisbursementCreateAPIView(CreateAPIView):
+    queryset = CashDisbursement.objects.all()
+    serializer_class = CashDisbursementSerializer
+    
+class SalesListAPIView(ListAPIView):
+    queryset = Sales.objects.all()
+    serializer_class = SalesSerializer
+    
+class SalesCreateAPIView(CreateAPIView):
+    queryset = Sales.objects.all()
+    serializer_class = SalesSerializer
+    

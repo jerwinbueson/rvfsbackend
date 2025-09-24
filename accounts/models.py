@@ -53,6 +53,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
+
+    company = models.ForeignKey('business.BusinessUnit', on_delete=models.CASCADE, null=True, blank=True)
     
 
     objects = CustomUserManager()

@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, UpdateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, UpdateAPIView, RetrieveUpdateAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from rest_framework import status
 from .models import CustomUser
-from .serializers import UserInformationSerializer
+from .serializers import UserInformationSerializer, CreateUserSerializer
 
 
 class AuthCheckView(APIView):
@@ -55,3 +55,10 @@ class UserProfileView(RetrieveUpdateAPIView):
     
     def get_object(self):
         return self.request.user
+
+
+class CreateUserView(CreateAPIView):
+    permission_classes = [AllowAny]
+    queryset = CustomUser.objects.all()
+    serializer_class = CreateUserSerializer
+    
