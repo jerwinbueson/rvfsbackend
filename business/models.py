@@ -36,3 +36,5 @@ class CalendarYear(models.Model):
         unique_together = ('business_unit', 'name')  
     def __str__(self):
         return f"{self.business_unit} - {self.name}"
+
+

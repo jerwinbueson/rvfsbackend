@@ -11,7 +11,8 @@ from .serializers import UserInformationSerializer, CreateUserSerializer
 
 
 class AuthCheckView(APIView):
-
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, *args, **kwargs):
         return Response({
             'id': request.user.id,

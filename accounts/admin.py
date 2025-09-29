@@ -10,12 +10,12 @@ from .models import CustomUser
 @admin.register(CustomUser)
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ('email', 'first_name', 'middle_name', 'last_name', 'is_staff', 'is_active', 'image')
+    list_display = ('email', 'first_name', 'middle_name', 'last_name', 'is_staff', 'is_active', 'image', 'company')
     list_filter = ('is_staff', 'is_active', 'groups')
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         (_('Personal info'), {
-            'fields': ('first_name', 'middle_name', 'last_name', 'date_of_birth', 'phone_number', 'image')
+            'fields': ('first_name', 'middle_name', 'last_name', 'date_of_birth', 'company', 'phone_number', 'image')
         }),
         (_('Permissions'), {
             'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
@@ -32,6 +32,7 @@ class CustomUserAdmin(UserAdmin):
                 'middle_name',
                 'last_name',
                 'date_of_birth',
+                'company',
                 'phone_number',
                 'image',
                 'is_active',
