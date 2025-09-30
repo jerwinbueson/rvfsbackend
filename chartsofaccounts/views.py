@@ -34,8 +34,12 @@ class AccountTypeListView(ListAPIView):
         return AccountType.objects.filter(business_unit=self.request.user.company)
 
 class AccountTypeCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(business_unit=self.request.user.company)
 
 class CashFlowTypeListView(ListAPIView):
     queryset = CashFlowType.objects.all()
@@ -47,7 +51,11 @@ class CashFlowTypeListView(ListAPIView):
         return CashFlowType.objects.filter(business_unit=self.request.user.company)
 
 class CashFlowTypeCreateView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = CashFlowType.objects.all()
     serializer_class = CashFlowTypeSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(business_unit=self.request.user.company)
     
     

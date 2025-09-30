@@ -5,6 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated, BasePermission
 
+
+
 from rest_framework import status
 from .models import(
     BusinessUnit,
@@ -14,6 +16,7 @@ from .serializers import(
     BusinessUnitSerializer,
     CalendarYearSerializer,
 )
+from django.shortcuts import get_object_or_404
 
 
 class CurrentCalendarYear(APIView):
@@ -37,9 +40,7 @@ class CurrentCalendarYear(APIView):
             if calendar_year:
                 request.session['calendar_year_id'] = calendar_year.id
 
-        return Response({
-            'calendar_year': CalendarYearSerializer(calendar_year).data if calendar_year else None
-        })
+        return Response(CalendarYearSerializer(calendar_year, context={'request': request}).data if calendar_year else None)
 
     def post(self, request):
         year_id = request.data.get('calendar_year_id')
