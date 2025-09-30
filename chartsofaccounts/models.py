@@ -2,6 +2,7 @@ from django.db import models
 
 
 class AccountType(models.Model):
+    business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT, blank=True, null=True) #Remove this blank and null during production
     name = models.CharField(max_length=50)
 
     def __str__(self):
@@ -9,6 +10,7 @@ class AccountType(models.Model):
 
 
 class CashFlowType(models.Model):
+    business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT, blank=True, null=True) #Remove this blank and null during production
     name = models.CharField(max_length=50)
 
     def __str__(self):

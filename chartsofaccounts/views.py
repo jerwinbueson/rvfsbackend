@@ -28,6 +28,11 @@ class AccountTypeListView(ListAPIView):
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
 
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return AccountType.objects.none()
+        return AccountType.objects.filter(business_unit=self.request.user.company)
+
 class AccountTypeCreateView(CreateAPIView):
     queryset = AccountType.objects.all()
     serializer_class = AccountTypeSerializer
@@ -35,6 +40,11 @@ class AccountTypeCreateView(CreateAPIView):
 class CashFlowTypeListView(ListAPIView):
     queryset = CashFlowType.objects.all()
     serializer_class = CashFlowTypeSerializer
+
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return CashFlowType.objects.none()
+        return CashFlowType.objects.filter(business_unit=self.request.user.company)
 
 class CashFlowTypeCreateView(CreateAPIView):
     queryset = CashFlowType.objects.all()
