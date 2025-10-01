@@ -2,7 +2,6 @@ from rest_framework import serializers
 from .models import(
     JournalEntry,
     JournalLine,
-    GeneralJournal,
     CashReceipt,
     CashDisbursement,
     Sales,
@@ -19,11 +18,6 @@ class JournalLineSerializer(serializers.ModelSerializer):
         model = JournalLine
         fields = '__all__'
 
-
-class GeneralJournalSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GeneralJournal
-        fields = '__all__'
 
 
 class CashReceiptSerializer(serializers.ModelSerializer):

@@ -3,7 +3,6 @@ from rest_framework.generics import ListAPIView, CreateAPIView
 from .models import(
     JournalEntry,
     JournalLine,
-    GeneralJournal,
     CashReceipt,
     CashDisbursement,
     Sales,
@@ -11,7 +10,6 @@ from .models import(
 from .serializers import(
     JournalEntrySerializer,
     JournalLineSerializer,
-    GeneralJournalSerializer,
     CashReceiptSerializer,
     CashDisbursementSerializer,
     SalesSerializer,
@@ -34,15 +32,6 @@ class JournalLineCreateAPIView(CreateAPIView):
     queryset = JournalLine.objects.all()
     serializer_class = JournalLineSerializer
     
-
-class GeneralJournalListAPIView(ListAPIView):
-    queryset = GeneralJournal.objects.all()
-    serializer_class = GeneralJournalSerializer
-    
-
-class GeneralJournalCreateAPIView(CreateAPIView):
-    queryset = GeneralJournal.objects.all()
-    serializer_class = GeneralJournalSerializer
 
 class CashReceiptListAPIView(ListAPIView):
     queryset = CashReceipt.objects.all()
