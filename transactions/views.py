@@ -1,5 +1,5 @@
-from django.shortcuts import render
 from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from .models import(
     JournalEntry,
     JournalLine,
@@ -19,9 +19,20 @@ class JournalEntryListAPIView(ListAPIView):
     queryset = JournalEntry.objects.all()
     serializer_class = JournalEntrySerializer
 
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return JournalEntry.objects.none()
+        return JournalEntry.objects.filter(business_unit=self.request.user.company)
+
 class JournalEntryCreateAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = JournalEntry.objects.all()
     serializer_class = JournalEntrySerializer
+
+    def perform_create(self, serializer):
+        serializer.save(business_unit=self.request.user.company)
+        calendar_year = self.request.user.company.calendaryear_set.get(default=True)
+        serializer.save(calendar_year=calendar_year)
 
 
 class JournalLineListAPIView(ListAPIView):
@@ -29,8 +40,14 @@ class JournalLineListAPIView(ListAPIView):
     serializer_class = JournalLineSerializer
 
 class JournalLineCreateAPIView(CreateAPIView):
+    permission_classes = [IsAuthenticated]
     queryset = JournalLine.objects.all()
     serializer_class = JournalLineSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(business_unit=self.request.user.company)
+        calendar_year = self.request.user.company.calendaryear_set.get(default=True)
+        serializer.save(calendar_year=calendar_year)
     
 
 class CashReceiptListAPIView(ListAPIView):
