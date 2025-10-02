@@ -13,6 +13,7 @@ from .serializers import(
     CashReceiptSerializer,
     CashDisbursementSerializer,
     SalesSerializer,
+    GeneralJournalSerializer
 )
 
 class JournalEntryListAPIView(ListAPIView):
@@ -38,6 +39,12 @@ class JournalEntryCreateAPIView(CreateAPIView):
 class JournalLineListAPIView(ListAPIView):
     queryset = JournalLine.objects.all()
     serializer_class = JournalLineSerializer
+
+
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return JournalLine.objects.none()
+        return JournalLine.objects.filter(business_unit=self.request.user.company)
 
 class JournalLineCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
@@ -75,3 +82,13 @@ class SalesCreateAPIView(CreateAPIView):
     queryset = Sales.objects.all()
     serializer_class = SalesSerializer
     
+
+class GeneralJournalListAPIView(ListAPIView):
+    prmission_classes = [IsAuthenticated]
+    queryset = JournalLine.objects.all()
+    serializer_class = GeneralJournalSerializer
+    
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return JournalLine.objects.none()
+        return JournalLine.objects.filter(business_unit=self.request.user.company)

@@ -25,7 +25,7 @@ class JournalLineSerializer(serializers.ModelSerializer):
         source='journal_entry', 
         read_only=True
     )
-    account_name = serializers.StringRelatedField(source='account.name')
+    account_name = serializers.StringRelatedField(source='account.name', read_only=True)
     class Meta:
         model = JournalLine
         fields = '__all__'
@@ -55,3 +55,16 @@ class SalesSerializer(serializers.ModelSerializer):
         model = Sales
         fields = '__all__'
     
+
+class GeneralJournalSerializer(serializers.ModelSerializer):
+    journal_entry_details = JournalEntrySerializer(
+        source='journal_entry', 
+        read_only=True
+    )
+    account_name = serializers.StringRelatedField(source='account.name', read_only=True)
+    account_type = serializers.StringRelatedField(source='account.account_type', read_only=True)
+    cash_flow_type = serializers.StringRelatedField(source='account.cash_flow_type', read_only=True)
+    class Meta:
+        model = JournalLine
+        fields = '__all__'
+        read_only_fields = ('business_unit', 'calendar_year')

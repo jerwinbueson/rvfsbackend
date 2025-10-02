@@ -20,9 +20,11 @@ class JournalLine(models.Model):
         ('Credit', 'Credit'),
     )
 
+    
 
     business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
     calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
+    account = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
     journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')
     validators=[MinValueValidator(0.01, message="Amount must be greater than 0")],
     type = models.CharField(max_length=10, choices=CHOICES, null=True, blank=True) #Remove this null and blank during production
