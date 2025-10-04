@@ -65,10 +65,23 @@ class CashReceiptSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
 class CashDisbursementSerializer(serializers.ModelSerializer):
+    account_name = serializers.StringRelatedField(source='account.name', read_only=True)
+    formatted_amount = serializers.SerializerMethodField()
+    formatted_disbursement_amount = serializers.SerializerMethodField()
     class Meta:
         model = CashDisbursement
         fields = '__all__'
-
+        read_only_fields = ('account_name',)
+    
+    def get_formatted_amount(self, obj):
+        if obj.cash_amount is not None:
+            return f"{obj.cash_amount:,.2f}"
+        return None
+    
+    def get_formatted_disbursement_amount(self, obj):
+        if obj.disbursement_amount is not None:
+            return f"{obj.disbursement_amount:,.2f}"
+        return None
 
 class SalesSerializer(serializers.ModelSerializer):
     class Meta:

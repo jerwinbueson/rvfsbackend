@@ -138,9 +138,9 @@ class CashDisbursement(models.Model):
     description = models.CharField(max_length=255)  # Supplier or description
     reference = models.CharField(max_length=50, blank=True, null=True)
     cash_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    purchase_return_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    purchase_discount_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    wht_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    purchase_return_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
+    purchase_discount_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
+    wht_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     disbursement_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
     journal_entry = models.OneToOneField(
@@ -164,117 +164,43 @@ class CashDisbursement(models.Model):
     # FIX 4: Implemented save method to call journal creation
     def save(self, *args, **kwargs):
         self.disbursement_amount = self.calculate_disbursement_amount()
-        # Add logic here if you need to calculate purchase_amount like sales_amount in CashReceipt
-        # e.g., self.purchase_amount = self.cash_amount + self.purchase_return_amount + self.purchase_discount_amount - self.wht_amount
-        # Or ensure it's set correctly before saving.
         is_new = self._state.adding
         super().save(*args, **kwargs)
 
         if is_new and not self.journal_entry:
-             try:
-                self._create_journal_entries()
-             except Exception as e:
-                print(f"Error creating journal entries for CashDisbursement {self.id}: {e}")
-                # Decide how to handle errors: raise ValidationError or just log.
+            journal_entry = JournalEntry.objects.create(
+                business_unit=self.business_unit,
+                calendar_year=self.calendar_year,
+                date=self.date,
+                reference=f"{self.reference or self.id}",
+                description=f"Cash disbursement: {self.description}",
+            )
 
-    # FIX 4 & 5: Completed _create_journal_entries method
-    def _create_journal_entries(self):
-        # Ensure required fields are set before creating journals
-        if not self.business_unit or not self.calendar_year:
-             raise ValidationError("Business Unit and Calendar Year are required before creating journal entries.")
-
-        # Get or determine account ids
-        # <<< YOU MUST IMPLEMENT THIS LOGIC >>>
-        # Example (assuming you have a way to get these accounts):
-        # purchase_account = ChartsOfAccounts.objects.get(code='5000') # Example Purchase Account
-        # cash_account = ChartsOfAccounts.objects.get(code='1000')     # Example Cash Account
-        # purchase_returns_account = ChartsOfAccounts.objects.get(code='5100') # Example Purchase Returns Account
-        # purchase_discounts_account = ChartsOfAccounts.objects.get(code='5200') # Example Purchase Discounts Account
-        # wht_payable_account = ChartsOfAccounts.objects.get(code='2200') # Example WHT Payable Account
-        purchase_account = self.account # <<< REPLACE WITH ACTUAL PURCHASE ACCOUNT LOGIC >>>
-        cash_account = self.account     # <<< REPLACE WITH ACTUAL CASH ACCOUNT LOGIC >>>
-        purchase_returns_account = None # <<< REPLACE WITH ACTUAL RETURNS ACCOUNT LOGIC >>>
-        purchase_discounts_account = None # <<< REPLACE WITH ACTUAL DISCOUNTS ACCOUNT LOGIC >>>
-        wht_payable_account = None # <<< REPLACE WITH ACTUAL WHT ACCOUNT LOGIC >>>
-
-        if not purchase_account or not cash_account:
-             raise ValidationError("Cannot determine necessary accounts (Purchase, Cash) for journal entry.")
-
-        # Calculate net purchase amount
-        net_purchase = self.purchase_amount - (self.purchase_return_amount or 0) - (self.purchase_discount_amount or 0)
-
-
-        journal_entry = JournalEntry.objects.create(
-            business_unit=self.business_unit,
-            calendar_year=self.calendar_year, # Added missing fields
-            date=self.date,
-            reference=f"{self.reference or self.id}", # Use reference or ID
-            description=f"Cash disbursement: {self.description}",
-        )
-
-        # Debit Purchase / Expense account
-        if net_purchase > 0:
+            # Debit Purchases
             JournalLine.objects.create(
                 business_unit=self.business_unit,
-                calendar_year=self.calendar_year, # Added missing fields
+                calendar_year=self.calendar_year,
                 journal_entry=journal_entry,
-                account=purchase_account,
+                account=self.account,
                 type='Debit',
-                amount=net_purchase,
-                particulars=f"Payment to supplier {self.description}"
+                amount=self.disbursement_amount,
+                particulars=f"Purchase from {self.description}"
             )
 
-        # Credit Purchase Returns / Discounts if any (Contra-Purchase accounts)
-        if self.purchase_return_amount and self.purchase_return_amount > 0 and purchase_returns_account:
-            JournalLine.objects.create(
-                 business_unit=self.business_unit,
-                calendar_year=self.calendar_year, # Added missing fields
-                journal_entry=journal_entry,
-                account=purchase_returns_account, # Use specific returns account
-                type='Credit',  # contra-purchase
-                amount=self.purchase_return_amount,
-                particulars=f"Purchase return from {self.description}"
-            )
-
-        if self.purchase_discount_amount and self.purchase_discount_amount > 0 and purchase_discounts_account:
+            # Credit Cash
             JournalLine.objects.create(
                 business_unit=self.business_unit,
-                calendar_year=self.calendar_year, # Added missing fields
+                calendar_year=self.calendar_year,
                 journal_entry=journal_entry,
-                account=purchase_discounts_account, # Use specific discount account
-                type='Credit',
-                amount=self.purchase_discount_amount,
-                particulars=f"Purchase discount from {self.description}"
-            )
-
-        # Credit WHT if any (WHT Payable account)
-        if self.wht_amount and self.wht_amount > 0 and wht_payable_account:
-            JournalLine.objects.create(
-                business_unit=self.business_unit,
-                calendar_year=self.calendar_year, # Added missing fields
-                journal_entry=journal_entry,
-                account=wht_payable_account, # Use specific WHT account
-                type='Credit',
-                amount=self.wht_amount,
-                particulars=f"WHT on payment to {self.description}"
-            )
-
-        # Credit Cash
-        if self.cash_amount and self.cash_amount > 0:
-            JournalLine.objects.create(
-                business_unit=self.business_unit,
-                calendar_year=self.calendar_year, # Added missing fields
-                journal_entry=journal_entry,
-                account=cash_account, # Use specific cash account
+                account=self.account,
                 type='Credit',
                 amount=self.cash_amount,
                 particulars=f"Cash payment to {self.description}"
             )
 
-        # Link the journal entry to this cash disbursement
-        self.journal_entry = journal_entry
-        # Use the parent save to avoid re-triggering _create_journal_entries
-        super(CashDisbursement, self).save(update_fields=['journal_entry'])
+            self.journal_entry = journal_entry
+            super().save(update_fields=['journal_entry'])
+
 
 
 class Sales(models.Model):
