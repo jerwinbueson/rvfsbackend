@@ -2,27 +2,22 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.exceptions import ValidationError
 
+
+class TransactionType(models.Model):
+    name = models.CharField(max_length=50)
+    description = models.TextField(blank=True)
+
+
 class JournalEntry(models.Model):
+    CHOICES = (
+        ('Debit', 'Debit'),
+        ('Credit', 'Credit'),
+    )  
     business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
     calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
     date = models.DateField()
     reference = models.CharField(max_length=20)  # control number/voucher no
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return f"{self.reference} - {self.date}"
-
-
-class JournalLine(models.Model):
-    CHOICES = (
-        ('Debit', 'Debit'),
-        ('Credit', 'Credit'),
-    )
-    business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
-    calendar_year = models.ForeignKey('business.CalendarYear', on_delete=models.PROTECT)
     account = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
-    journal_entry = models.ForeignKey(JournalEntry, on_delete=models.CASCADE, related_name='lines')
-    # FIX 1: Moved validators into the amount field definition
     type = models.CharField(max_length=10, choices=CHOICES, null=True, blank=True) #Remove this null and blank during production
     amount = models.DecimalField(
         max_digits=15,
@@ -50,84 +45,6 @@ class CashReceipt(models.Model):
     sales_discount_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     wht_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     sales_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
-    journal_entry = models.OneToOneField(
-        JournalEntry,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='cash_receipt'
-    )
-
-    def calculate_sales_amount(self):
-        return (
-            self.cash_amount -
-            (self.sales_return_amount or 0) -
-            (self.sales_discount_amount or 0) -
-            (self.wht_amount or 0)
-        )
-
-    def __str__(self):
-        return f"CashReceipt {self.reference} - {self.description}"
-
-    # FIX 2: Improved save method logic for creating and linking entries
-    def save(self, *args, **kwargs):
-        self.sales_amount = self.calculate_sales_amount()
-        is_new = self._state.adding
-        super().save(*args, **kwargs)
-
-        if is_new and not self.journal_entry:
-            try:
-                # Create Journal Entry
-                journal_entry = JournalEntry.objects.create(
-                    business_unit=self.business_unit,
-                    calendar_year=self.calendar_year,
-                    date=self.date,
-                    reference=f"{self.reference or self.id}",
-                    description=f"Cash receipt: {self.description}",
-                )
-
-                # Create Debit entry (Cash)
-                if self.cash_amount > 0:
-                    JournalLine.objects.create(
-                        business_unit=self.business_unit,
-                        calendar_year=self.calendar_year,
-                        account=self.account,  # This should be the cash account
-                        journal_entry=journal_entry,
-                        type='Debit',
-                        amount=self.cash_amount,
-                        particulars=f"Cash receipt from {self.description}"
-                    )
-
-                 # Create Credit entry (Sales)
-                if self.sales_amount > 0:
-                    # You might want to get the sales account from settings or another source
-                    # For now, using the same account field (which should be the cash account)
-                    # This needs correction: Credit Sales, Debit Cash
-                    # The logic here assumes 'self.account' is the cash account for the debit.
-                    # You need to fetch the appropriate SALES account for the credit.
-                    sales_account = self.account # <<< REPLACE WITH ACTUAL SALES ACCOUNT LOGIC >>>
-                    JournalLine.objects.create(
-                        business_unit=self.business_unit,
-                        calendar_year=self.calendar_year,
-                        account=sales_account,
-                        journal_entry=journal_entry,
-                        type='Credit',
-                        amount=self.sales_amount,
-                        particulars=f"Sales from {self.description}"
-                    )
-
-                # Link the journal entry to this cash receipt
-                self.journal_entry = journal_entry
-                # Use update_fields to avoid calling save signals again unnecessarily
-                # and only save the specific field.
-                super().save(update_fields=['journal_entry'])
-
-            except Exception as e:
-                # Handle potential errors during journal creation
-                # e.g., log the error, raise a ValidationError, or delete the half-created entries
-                print(f"Error creating journal entries for CashReceipt {self.id}: {e}")
-                # Optionally, raise an error to prevent saving the CashReceipt without journals
-                # raise ValidationError("Could not create corresponding journal entries.") from e
 
 
 class CashDisbursement(models.Model):
@@ -143,68 +60,9 @@ class CashDisbursement(models.Model):
     wht_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0, null=True, blank=True)
     disbursement_amount = models.DecimalField(max_digits=15, decimal_places=2, default=0)
 
-    journal_entry = models.OneToOneField(
-        JournalEntry,
-        on_delete=models.CASCADE,
-        related_name='cash_disbursement',
-        null=True,
-        blank=True
-    )
-    def calculate_disbursement_amount(self):
-        return (
-            self.cash_amount - 
-            (self.purchase_return_amount or 0) -
-            (self.purchase_discount_amount or 0) -
-            (self.wht_amount or 0)
-        )
-    # FIX 3: Corrected __str__ method
-    def __str__(self):
-        return f"CashDisbursement {self.reference} - {self.description}"
-
-    # FIX 4: Implemented save method to call journal creation
-    def save(self, *args, **kwargs):
-        self.disbursement_amount = self.calculate_disbursement_amount()
-        is_new = self._state.adding
-        super().save(*args, **kwargs)
-
-        if is_new and not self.journal_entry:
-            journal_entry = JournalEntry.objects.create(
-                business_unit=self.business_unit,
-                calendar_year=self.calendar_year,
-                date=self.date,
-                reference=f"{self.reference or self.id}",
-                description=f"Cash disbursement: {self.description}",
-            )
-
-            # Debit Purchases
-            JournalLine.objects.create(
-                business_unit=self.business_unit,
-                calendar_year=self.calendar_year,
-                journal_entry=journal_entry,
-                account=self.account,
-                type='Debit',
-                amount=self.disbursement_amount,
-                particulars=f"Purchase from {self.description}"
-            )
-
-            # Credit Cash
-            JournalLine.objects.create(
-                business_unit=self.business_unit,
-                calendar_year=self.calendar_year,
-                journal_entry=journal_entry,
-                account=self.account,
-                type='Credit',
-                amount=self.cash_amount,
-                particulars=f"Cash payment to {self.description}"
-            )
-
-            self.journal_entry = journal_entry
-            super().save(update_fields=['journal_entry'])
-
-
+    
 
 class Sales(models.Model):
-    journal_entry = models.OneToOneField(JournalEntry, on_delete=models.CASCADE, related_name='sale')
     invoice_number = models.CharField(max_length=50)
     customer = models.CharField(max_length=255)
     total_amount = models.DecimalField(max_digits=15, decimal_places=2)

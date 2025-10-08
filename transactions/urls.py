@@ -1,7 +1,5 @@
 from django.urls import path
 from .views import(
-    JournalEntryListAPIView,
-    JournalEntryCreateAPIView,
     JournalLineListAPIView,
     JournalLineCreateAPIView,
     CashReceiptListAPIView,
@@ -14,8 +12,6 @@ from .views import(
 )
 
 urlpatterns = [
-    path('journal-entry/', JournalEntryListAPIView.as_view(), name='journal-entry-list'),
-    path('journal-entry/create/', JournalEntryCreateAPIView.as_view(), name='journal-entry-create'),
     path('journal-line/', JournalLineListAPIView.as_view(), name='journal-line-list'),
     path('journal-line/create/', JournalLineCreateAPIView.as_view(), name='journal-line-create'),
     path('cash-receipt/', CashReceiptListAPIView.as_view(), name='cash-receipt-list'),

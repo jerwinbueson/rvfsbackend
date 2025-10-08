@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from transactions.models import JournalLine
+from transactions.models import JournalEntry
 
 # serializers.py
 class GeneralLedgerSerializer(serializers.ModelSerializer):
@@ -12,7 +12,7 @@ class GeneralLedgerSerializer(serializers.ModelSerializer):
     credit         = serializers.SerializerMethodField()
 
     class Meta:
-        model  = JournalLine
+        model  = JournalEntry
         fields = ['date','reference','description','account_code','account_name',
                   'debit','credit','particulars']
 

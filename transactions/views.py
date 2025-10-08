@@ -1,13 +1,17 @@
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import (
-    JournalEntry, JournalLine,
-    CashReceipt, CashDisbursement, Sales,
+    JournalEntry,
+    CashReceipt, 
+    CashDisbursement, 
+    Sales,
 )
 from .serializers import (
-    JournalEntrySerializer, JournalLineSerializer,
-    CashReceiptSerializer, CashDisbursementSerializer,
-    SalesSerializer, GeneralJournalSerializer,
+    JournalEntrySerializer,
+    CashReceiptSerializer, 
+    CashDisbursementSerializer,
+    SalesSerializer, 
+    GeneralJournalSerializer,
 )
 
 # ---------- helpers -------------------------------------------------
@@ -22,27 +26,9 @@ def _add_user_headers(serializer, user):
     )
 # -------------------------------------------------------------------
 
-class JournalEntryListAPIView(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = JournalEntrySerializer
-
-    def get_queryset(self):
-        return JournalEntry.objects.filter(
-            business_unit=self.request.user.company
-        ).select_related('business_unit', 'calendar_year').order_by('-date')
-
-
-class JournalEntryCreateAPIView(CreateAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = JournalEntrySerializer
-
-    def perform_create(self, serializer):
-        _add_user_headers(serializer, self.request.user)
-
-
 class JournalLineListAPIView(ListAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = JournalLineSerializer
+    serializer_class = JournalEntrySerializer
 
     def get_queryset(self):
         return JournalLine.objects.filter(
@@ -54,7 +40,7 @@ class JournalLineListAPIView(ListAPIView):
 
 class JournalLineCreateAPIView(CreateAPIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = JournalLineSerializer
+    serializer_class = JournalEntrySerializer
 
     def perform_create(self, serializer):
         _add_user_headers(serializer, self.request.user)

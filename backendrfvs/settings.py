@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'chartsofaccounts',
     'transactions',
     'reports',
+    'customers',
+    'suppliers',
 ]
 
 MIDDLEWARE = [

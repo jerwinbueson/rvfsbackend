@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.db.models import Sum, Case, When, F, DecimalField
-from transactions.models import JournalLine
+from transactions.models import JournalEntry
 from .serializers import GeneralLedgerSerializer
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
