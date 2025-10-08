@@ -26,7 +26,8 @@ class GeneralLedgerAPIView(ListAPIView):
         )
         
         # Optional filters
-        account = self.request.query_params.get('account')       if account:
+        account = self.request.query_params.get('account')       
+        if account:
             qs = qs.filter(account__code=account)
         
         return qs
