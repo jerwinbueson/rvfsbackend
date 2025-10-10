@@ -35,6 +35,7 @@ class JournalEntry(models.Model):
     reference = models.CharField(max_length=20)  # control number/voucher no
     account = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
     transaction_type = models.ForeignKey(TransactionType, on_delete=models.PROTECT)
+    entry_type = models.CharField(max_length=10, choices=CHOICES)
     description = models.CharField(max_length=255)
     supplier = models.ForeignKey('suppliers.Supplier', on_delete=models.PROTECT, blank=True, null=True)
     customer = models.ForeignKey('customers.Customer', on_delete=models.PROTECT, blank=True, null=True)
