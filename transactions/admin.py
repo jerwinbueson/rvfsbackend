@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import JournalEntry, CashReceipt, CashDisbursement, Sales
+from .models import JournalEntry, PaymentType, TransactionType, PaymentTerm
 
 
 admin.site.register(JournalEntry)
-admin.site.register(CashReceipt)
-admin.site.register(CashDisbursement)
-admin.site.register(Sales)
+admin.site.register(PaymentType)
+admin.site.register(TransactionType)
+admin.site.register(PaymentTerm)

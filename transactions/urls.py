@@ -1,24 +1,9 @@
 from django.urls import path
 from .views import(
-    JournalLineListAPIView,
-    JournalLineCreateAPIView,
-    CashReceiptListAPIView,
-    CashReceiptCreateAPIView,
-    CashDisbursementListAPIView,
-    CashDisbursementCreateAPIView,
-    SalesListAPIView,
-    SalesCreateAPIView,
-    GeneralJournalListAPIView,
+    JournalEntryCreateAPIView,
+
 )
 
 urlpatterns = [
-    path('journal-line/', JournalLineListAPIView.as_view(), name='journal-line-list'),
-    path('journal-line/create/', JournalLineCreateAPIView.as_view(), name='journal-line-create'),
-    path('cash-receipt/', CashReceiptListAPIView.as_view(), name='cash-receipt-list'),
-    path('cash-receipt/create/', CashReceiptCreateAPIView.as_view(), name='cash-receipt-create'),
-    path('cash-disbursement/', CashDisbursementListAPIView.as_view(), name='cash-disbursement-list'),
-    path('cash-disbursement/create/', CashDisbursementCreateAPIView.as_view(), name='cash-disbursement-create'),
-    path('sales/', SalesListAPIView.as_view(), name='sales-list'),
-    path('sales/create/', SalesCreateAPIView.as_view(), name='sales-create'),
-    path('general-journal/', GeneralJournalListAPIView.as_view(), name='general-journal-list'),
+    path('journal-entry/', JournalEntryCreateAPIView.as_view(), name='journal-line-list'),
 ]
