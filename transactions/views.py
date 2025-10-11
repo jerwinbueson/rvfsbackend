@@ -8,7 +8,7 @@ from .models import (
 )
 from .serializers import (
     JournalEntrySerializer,
-
+    CashDisbursementSerializer,
 )
 
 # ---------- helpers -------------------------------------------------
@@ -31,3 +31,9 @@ class JournalEntryCreateAPIView(CreateAPIView):
     def perform_create(self, serializer):
         _add_user_headers(serializer, self.request.user)
 
+class CashDisbursementCreateAPIView(CreateAPIView):
+    serializer_class = CashDisbursementSerializer
+
+    def perform_create(self, serializer):
+        _add_user_headers(serializer, self.request.user)
+    

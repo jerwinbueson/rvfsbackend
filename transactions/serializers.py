@@ -19,3 +19,29 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         
 
 
+class CashDisbursementSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JournalEntry
+        fields = [
+            'id',
+            'date',
+            'reference', 
+            'account', 
+            'entry_type', 
+            'description', 
+            'supplier', 
+            'payment_type', 
+            'check_number', 
+            'bank', 
+            'amount', 
+            'particulars'
+            ]
+    def create(self, validated_data):
+        transaction_type = TransactionType.objects.get(name='Cash Disbursement')
+        validated_data['transaction_type'] = transaction_type
+        entry_type = 'Debit'
+        validated_data['entry_type'] = entry_type
+        return JournalEntry.objects.create(**validated_data)
+            
+        
+    
