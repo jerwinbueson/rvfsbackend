@@ -4,14 +4,6 @@ from django.core.exceptions import ValidationError
 from bank.models import Bank
 
 
-class TransactionType(models.Model):
-    business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
-    name = models.CharField(max_length=50)
-    description = models.TextField(blank=True)
-
-    def __str__(self):
-        return self.name
-
 
 class PaymentType(models.Model):
     business_unit = models.ForeignKey('business.BusinessUnit', on_delete=models.PROTECT)
@@ -25,6 +17,15 @@ class PaymentType(models.Model):
 
 
 class JournalEntry(models.Model):
+    TRANSACTION_TYPE = (
+        ('Cash Disbursement', 'Cash Disbursement'),
+        ('Cash Receipt', 'Cash Receipt'),
+        ('Journal Entry', 'Journal Entry'),
+        ('Sales Invoice', 'Sales Invoice'),
+        ('Purchase Invoice', 'Purchase Invoice'),
+    )
+    
+    
     CHOICES = (
         ('Debit', 'Debit'),
         ('Credit', 'Credit'),
@@ -34,7 +35,7 @@ class JournalEntry(models.Model):
     date = models.DateField()
     reference = models.CharField(max_length=20)  # control number/voucher no
     account = models.ForeignKey('chartsofaccounts.ChartsOfAccounts', on_delete=models.PROTECT)
-    transaction_type = models.ForeignKey(TransactionType, on_delete=models.PROTECT)
+    transaction_type = models.CharField(max_length=50, choices=TRANSACTION_TYPE)
     entry_type = models.CharField(max_length=10, choices=CHOICES)
     description = models.CharField(max_length=255)
     supplier = models.ForeignKey('suppliers.Supplier', on_delete=models.PROTECT, blank=True, null=True)
