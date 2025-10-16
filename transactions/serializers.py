@@ -11,6 +11,7 @@ from chartsofaccounts.models import ChartsOfAccounts
 class JournalEntrySerializer(serializers.ModelSerializer):
     account_name = serializers.StringRelatedField(source='account.name', read_only=True)
     formatted_amount = serializers.SerializerMethodField()
+    account_type = serializers.StringRelatedField(source='account.type', read_only=True)
     account = serializers.PrimaryKeyRelatedField(
         queryset=ChartsOfAccounts.objects.none()
     )
