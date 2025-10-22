@@ -1,5 +1,6 @@
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 from .models import (
     JournalEntry,
     PaymentType,
@@ -11,6 +12,9 @@ from .serializers import (
     CashReceiptSerializer,
     SalesInvoiceSerializer, 
     PurchaseInvoiceSerializer,
+)
+from .filters import (
+    JournalEntryFilter,
 )
 from business.models import BusinessUnit, CalendarYear
 
@@ -38,6 +42,8 @@ class JournalEntryCreateAPIView(CreateAPIView):
 class JournalEntryListAPIView(ListAPIView):
     serializer_class = JournalEntrySerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = JournalEntryFilter
     
     def get_queryset(self):
         if not hasattr(self.request.user, 'company') or not self.request.user.company:

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'reports',
     'customers',
     'suppliers',
+    'django_filters',
     'bank',
 ]
 
@@ -136,6 +137,18 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+
+
+
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+        ]
+}
+
+
 
 
 

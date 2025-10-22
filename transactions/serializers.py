@@ -32,6 +32,7 @@ class JournalEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = JournalEntry
         fields = '__all__'
+        read_only_fields = ['business_unit', 'calendar_year']
         
 
 
@@ -71,6 +72,7 @@ class CashDisbursementSerializer(serializers.ModelSerializer):
             'particulars',
             'transaction_type'
             ]
+        read_only_fields = ['business_unit', 'calendar_year']
     def create(self, validated_data):
         transaction_type = 'Cash Disbursement'
         validated_data['transaction_type'] = transaction_type
@@ -114,6 +116,7 @@ class CashReceiptSerializer(serializers.ModelSerializer):
             'particulars',
             'transaction_type'
             ]
+        read_only_fields = ['business_unit', 'calendar_year']
     def create(self, validated_data):
         transaction_type = 'Cash Receipt'
         validated_data['transaction_type'] = transaction_type
@@ -157,7 +160,7 @@ class SalesInvoiceSerializer(serializers.ModelSerializer):
             'particulars',
             'transaction_type'
             ]
-        
+        read_only_fields = ['business_unit', 'calendar_year']
     def create(self, validated_data):
         transaction_type = 'Sales Invoice'
         validated_data['transaction_type'] = transaction_type
@@ -202,7 +205,7 @@ class PurchaseInvoiceSerializer(serializers.ModelSerializer):
             'particulars',
             'transaction_type'
             ]
-    
+        read_only_fields = ['business_unit', 'calendar_year']
     def create(self, validated_data):
         transaction_type = 'Purchase Invoice'
         validated_data['transaction_type'] = transaction_type
