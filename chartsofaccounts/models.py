@@ -32,8 +32,8 @@ class ChartsOfAccounts(models.Model):
     description = models.CharField(max_length=150)
 
     class Meta:
-        unique_together = ('business_unit', 'code', 'name')
+        unique_together = ('business_unit', 'name')
 
     def __str__(self):
-        return self.name
+        return f'{self.name}'
 

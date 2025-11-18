@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'reports',
     'customers',
     'suppliers',
+    'django_filters',
     'bank',
 ]
 
@@ -139,23 +140,35 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+        ]
+}
+
+
+
+
+
 # CSRF_COOKIE_DOMAIN = ".rvfsfinance.site"
 # SESSION_COOKIE_DOMAIN = ".rvfsfinance.site"
 
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOW_CREDENTIALS = True
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5173",
-#     "https://rvfsfinance.site",
-# ]
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "https://rvfsfinance.site",
+]
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "http://localhost:5173",
-#     "https://rvfsfinance.site",
-#     "https://backend.rvfsfinance.site",
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",
+    "https://rvfsfinance.site",
+    "https://backend.rvfsfinance.site",
 
-# ]
+]
 
 # SESSION_COOKIE_SECURE = False  # Set to True in production
 # CSRF_COOKIE_SECURE = False
