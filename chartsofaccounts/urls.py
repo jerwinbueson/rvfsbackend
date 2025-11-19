@@ -1,20 +1,16 @@
 from nturl2path import url2pathname
 from django.urls import path
 from .views import (
-    ChartsOfAccountsListView, 
-    ChartsOfAccountsCreateView, 
-    AccountTypeListView, 
-    AccountTypeCreateView, 
-    CashFlowTypeListView, 
-    CashFlowTypeCreateView       
+    ChartsOfAccountsView,
+    ChartsOfAccountsRUDView,
+    AccountTypeView, 
+    CashFlowTypeView, 
 )
 
 urlpatterns = [
-    path('', ChartsOfAccountsListView.as_view(), name='charts-of-accounts-list'),
-    path('create/', ChartsOfAccountsCreateView.as_view(), name='charts-of-accounts-create'),
-    path('account-type/', AccountTypeListView.as_view(), name='account-type-list'),
-    path('account-type/create/', AccountTypeCreateView.as_view(), name='account-type-create'),
-    path('cash-flow-type/', CashFlowTypeListView.as_view(), name='cash-flow-type-list'),
-    path('cash-flow-type/create/', CashFlowTypeCreateView.as_view(), name='cash-flow-type-create'),
+    path('', ChartsOfAccountsView.as_view(), name='charts-of-accounts-list'),
+    path('<int:pk>/', ChartsOfAccountsRUDView.as_view()),
+    path('account-type/', AccountTypeView.as_view(), name='account-type-list'),
+    path('cash-flow/', CashFlowTypeView.as_view(), name='cash-flow-type-list'),
 ]
     
