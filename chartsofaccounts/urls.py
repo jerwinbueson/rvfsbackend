@@ -5,6 +5,7 @@ from .views import (
     ChartsOfAccountsRUDView,
     AccountTypeView, 
     CashFlowTypeView, 
+    COAListView
 )
 
 urlpatterns = [
@@ -12,5 +13,6 @@ urlpatterns = [
     path('<int:pk>/', ChartsOfAccountsRUDView.as_view()),
     path('account-type/', AccountTypeView.as_view(), name='account-type-list'),
     path('cash-flow/', CashFlowTypeView.as_view(), name='cash-flow-type-list'),
+    path('coa/', COAListView.as_view()),
 ]
     
