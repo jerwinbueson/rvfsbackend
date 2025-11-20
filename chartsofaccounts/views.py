@@ -1,6 +1,11 @@
 from django.shortcuts import render
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .serializers import ChartsOfAccountsSerializer, AccountTypeSerializer, CashFlowTypeSerializer
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
+from .serializers import (
+    ChartsOfAccountsSerializer,
+    COAListSerializer,
+    AccountTypeSerializer, 
+    CashFlowTypeSerializer
+    )
 from .models import ChartsOfAccounts, AccountType, CashFlowType
 from rest_framework.permissions import IsAuthenticated
 
@@ -60,4 +65,11 @@ class CashFlowTypeView(ListCreateAPIView):
     
 
     
+class COAListView(ListAPIView):
+    serializer_class = COAListSerializer
+    queryset = ChartsOfAccounts.objects.all()
     
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return ChartsOfAccounts.objects.none()
+        return ChartsOfAccounts.objects.filter(business_unit=self.request.user.company)

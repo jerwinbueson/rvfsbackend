@@ -30,4 +30,8 @@ class ChartsOfAccountsSerializer(serializers.ModelSerializer):
             ).exists():
                 raise serializers.ValidationError({"non_field_errors": ["Account Code and Name must be unique."]})
         return data
-                
+
+class COAListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChartsOfAccounts
+        fields = ['id', 'name']
