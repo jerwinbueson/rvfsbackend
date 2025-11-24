@@ -14,6 +14,7 @@ from .serializers import (
     CashReceiptSerializer,
     SalesInvoiceSerializer, 
     PurchaseInvoiceSerializer,
+    GeneralJournalSerializer,
     
 )
 from .filters import (
@@ -211,3 +212,12 @@ class PurchaseInvoiceListAPIView(ListAPIView):
             calendar_year=cal,
             transaction_type='Purchase Invoice'
         ).select_related('account', 'supplier', 'customer', 'payment_type', 'bank')
+
+class GeneralJournalView(ListAPIView):
+    serializer_class = GeneralJournalSerializer
+    queryset = JournalEntry
+
+    def get_queryset(self):
+        if not hasattr(self.request.user, 'company') or not self.request.user.company:
+            return JournalEntry.objects.none()
+        return JournalEntry.objects.filter(business_unit=self.request.user.company)

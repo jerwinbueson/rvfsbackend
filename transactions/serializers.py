@@ -214,3 +214,8 @@ class PurchaseInvoiceSerializer(serializers.ModelSerializer):
         entry_type = 'Debit'
         validated_data['entry_type'] = entry_type
         return JournalEntry.objects.create(**validated_data)
+    
+class GeneralJournalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JournalEntry
+        fields = ['date', 'reference', 'transaction_type', 'entry_type', 'amount', 'particulars']

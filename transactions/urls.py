@@ -11,6 +11,7 @@ from .views import(
     SalesInvoiceListAPIView,
     PurchaseInvoiceCreateAPIView,
     PurchaseInvoiceListAPIView,
+    GeneralJournalView
     
 )
 
@@ -26,4 +27,5 @@ urlpatterns = [
     path('sales-invoice/', SalesInvoiceListAPIView.as_view(), name='sales-invoice-list'),
     path('purchase-invoice/create/', PurchaseInvoiceCreateAPIView.as_view(), name='purchase-invoice-create'),
     path('purchase-invoice/', PurchaseInvoiceListAPIView.as_view(), name='purchase-invoice-list'),
+    path('general-journal/', GeneralJournalView.as_view(),)
 ]
