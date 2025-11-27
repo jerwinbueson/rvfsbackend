@@ -33,7 +33,7 @@ class JournalEntrySerializer(serializers.ModelSerializer):
         model = JournalEntry
         fields = '__all__'
         read_only_fields = ['business_unit', 'calendar_year']
-        
+
 
 class JournalEntryFilterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -216,6 +216,10 @@ class PurchaseInvoiceSerializer(serializers.ModelSerializer):
         return JournalEntry.objects.create(**validated_data)
     
 class GeneralJournalSerializer(serializers.ModelSerializer):
+    account_name = serializers.SerializerMethodField()
     class Meta:
         model = JournalEntry
-        fields = ['date', 'reference', 'transaction_type', 'entry_type', 'amount', 'particulars']
+        fields = ['date', 'account_name', 'reference', 'transaction_type', 'entry_type', 'amount', 'particulars']
+
+    def get_account_name(self, obj):
+        return obj.account.name
